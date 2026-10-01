@@ -13,7 +13,7 @@
 let
   packageSuffix = if variant == null then "" else "-${variant}";
   imageArgs = {
-    name = "ghcr.io/gufo-org/toolboxes/gufo-dev";
+    name = "ghcr.io/joryirving/toolboxes/gufo-dev";
     tag = imageTag;
     contents = [
       engine

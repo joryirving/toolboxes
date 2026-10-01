@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    gufo-engine.url = "github:gufo-org/gufo";
+    gufo-engine.url = "github:gufo-org/gufo/840d3736012ebeb123472b2dc8ca39411084b05e";
   };
 
   outputs =
