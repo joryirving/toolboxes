@@ -22,7 +22,7 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   IMAGE_PREFIX: ghcr.io/${{ github.repository }}
-  GUFO_REVISION: edd0d2820043039b18c0b5afcbe2f1c4c44640c8
+  GUFO_REVISION: 24965a7493acb54508e5b110d862bd87d5a910ea
 
 jobs:
   prepare:
