@@ -77,23 +77,24 @@ jobs:
         run: |
           echo "🔨 Building ${{ matrix.target }}-image with Nix..."
           nix flake lock --override-input gufo-engine github:gufo-org/gufo/${{ env.GUFO_REVISION }}
+          LOCKED_REVISION=$(jq -er '.nodes["gufo-engine"].locked.rev' flake.lock)
+          test "$LOCKED_REVISION" = "${{ env.GUFO_REVISION }}"
           nix build .#packages.x86_64-linux.${{ matrix.target }}-image --out-link result-${{ matrix.target }}
 
       - name: Load and Push image to GHCR
         run: |
           set -euo pipefail
           IMAGE_NAME="${{ env.IMAGE_PREFIX }}/${{ matrix.target }}"
-          GUFO_REVISION=$(jq -er '.nodes["gufo-engine"].locked.rev' flake.lock)
-          IMMUTABLE_TAG="sha-${GUFO_REVISION}"
+          SOURCE_IMAGE="ghcr.io/gufo-org/toolboxes/${{ matrix.target }}:edge"
+          LOCKED_REVISION=$(jq -er '.nodes["gufo-engine"].locked.rev' flake.lock)
+          test "$LOCKED_REVISION" = "${{ env.GUFO_REVISION }}"
+          IMMUTABLE_TAG="sha-${LOCKED_REVISION}"
 
           echo "📥 Loading image into Docker daemon..."
           docker load < result-${{ matrix.target }}
 
-          echo "🏷️ Tagging image..."
-          docker tag "${IMAGE_NAME}:edge" "${IMAGE_NAME}:${IMMUTABLE_TAG}"
-
-          echo "🚀 Pushing edge..."
-          docker push "${IMAGE_NAME}:edge"
+          echo "🏷️ Tagging upstream image ${SOURCE_IMAGE} as ${IMAGE_NAME}:${IMMUTABLE_TAG}..."
+          docker tag "$SOURCE_IMAGE" "${IMAGE_NAME}:${IMMUTABLE_TAG}"
 
           echo "🚀 Pushing immutable Gufo revision tag ${IMMUTABLE_TAG}..."
           docker push "${IMAGE_NAME}:${IMMUTABLE_TAG}"
