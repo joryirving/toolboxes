@@ -22,6 +22,7 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   IMAGE_PREFIX: ghcr.io/${{ github.repository }}
+  GUFO_REVISION: edd0d2820043039b18c0b5afcbe2f1c4c44640c8
 
 jobs:
   prepare:
@@ -75,6 +76,7 @@ jobs:
       - name: Build OCI image with Nix
         run: |
           echo "🔨 Building ${{ matrix.target }}-image with Nix..."
+          nix flake lock --override-input gufo-engine github:gufo-org/gufo/${{ env.GUFO_REVISION }}
           nix build .#packages.x86_64-linux.${{ matrix.target }}-image --out-link result-${{ matrix.target }}
 
       - name: Load and Push image to GHCR
